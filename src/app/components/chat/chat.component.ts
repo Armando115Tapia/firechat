@@ -1,19 +1,32 @@
 import { Mensaje } from './../../interfaces/mensaje.interface';
 import { ChatService } from './../../providers/chat.service';
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 
 @Component({
   selector: 'app-chat',
   templateUrl: './chat.component.html',
   styles: []
 })
-export class ChatComponent  {
+export class ChatComponent implements OnInit  {
 
   mensaje: string = "";
-  constructor(private chatService: ChatService) {
-    this.chatService.cargarMensajes().subscribe();
+  elemento: any;
+  constructor(public _cs: ChatService) {
+
+    this._cs.cargarMensajes().subscribe( () =>
+            {
+              setTimeout( () => {
+                this.elemento.scrollTop = this.elemento.scrollHeight;
+              }, 20)
+
+            });
+
    }
 
+
+  ngOnInit(){
+    this.elemento = document.getElementById('app-mensajes');
+  }
 
   enviar_mensaje(){
     // console.log(this.mensaje);
@@ -21,7 +34,7 @@ export class ChatComponent  {
     length
       if(this.mensaje.length ===  0){ return ; }
 
-      this.chatService.agregarMensaje(this.mensaje).then( () => {
+      this._cs.agregarMensaje(this.mensaje).then( () => {
         console.log("se envio correctamente");
         this.mensaje = "";
       }).catch( (err) => {console.log("problemas al enviar: ", err )});
